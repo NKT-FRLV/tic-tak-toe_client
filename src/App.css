@@ -1,0 +1,86 @@
+#root {
+  max-width: 1280px;
+  height: 100svh;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+.game-page {
+  width: 80vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  margin-bottom: 20px;
+}
+
+.header__info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.header__current-step-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 200px;
+}
+
+.room-players-list {
+  list-style: none;
+}
+
+.deskWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* flex-grow: 1; */
+  min-height: 350px;
+
+
+  border-bottom: #333 solid 2px;
+  border-top: #333 solid 2px;
+}
+
+.desk {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  gap: 5px;
+}
+
+.cell {
+  width: 80px;
+  height: 80px;
+  font-size: 24px;
+  text-align: center;
+  line-height: 80px;
+  /* background-color: #333; */
+  border: transparent;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  flex-grow: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
