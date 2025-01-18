@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import socket from '../../socket/socket';
@@ -34,6 +35,7 @@ const calculateWinner = (squares: (string | null)[]): WinnerAndCombination | nul
 };
 
 const GamePage: React.FC = () => {
+  const navigate = useNavigate();
   const [squares, setSquares] = useState<('X' | 'O' | '' | null)[]>(Array(9).fill(null));
   const [isGameStarted, setIsGameStarted] = useState(false);
 //   const [isGameFinished, setIsGameFinished] = useState(false);
@@ -112,6 +114,11 @@ const GamePage: React.FC = () => {
     socket.emit('restartGame', { room });
   };
 
+  const handleLeaveRoom = useCallback(() => {
+    socket.emit('leaveRoom', { name, room });
+    navigate('/');
+  },[])
+
   return (
     <div className="game-page">
       <Header
@@ -120,6 +127,7 @@ const GamePage: React.FC = () => {
         playerRole={role}
         playerName={name}
         thisRoom={room}
+        exitRoom={handleLeaveRoom}
       />
       <Desk
         squares={squares}
