@@ -1,5 +1,5 @@
 import './App.css'
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './components/loginPage/LoginPage'
 import GamePage from './components/gamePage/GamePage'
 
@@ -11,7 +11,7 @@ function App() {
     <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/game" element={<GamePage />} />
-        {/* <Route path="*" element={<Navigate to="/" />} /> */}
+        <Route path="*" element={<Navigate to="/" />} />
     </Routes>
     </>
   )
