@@ -1,44 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { calculateWinner, processMove, isGameModeType } from './utils';
+import type { GameModeType } from '../../types';
 import socket from '../../socket/socket';
 import Desk from '../desk/Desk';
 import Header from '../header/Header';
 
-interface WinnerAndCombination {
-  winner: string | null;
-  combination: number[] | null;
-}
-
-const calculateWinner = (squares: (string | null)[]): WinnerAndCombination | null => {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
-  for (const [a, b, c] of lines) {
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return { winner: squares[a], combination: [a, b, c] };;
-    }
-  }
-  if (squares.every((square) => square !== null)) {
-    return { winner: 'Ничья', combination: null };;
-  }
-  return null;
-};
+type SquareValue = 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null;
 
 const GamePage: React.FC = () => {
   const navigate = useNavigate();
-  const [squares, setSquares] = useState<('X' | 'O' | '' | null)[]>(Array(9).fill(null));
+  const [squares, setSquares] = useState<SquareValue[]>(Array(9).fill(null));
   const [isGameStarted, setIsGameStarted] = useState(false);
-//   const [isGameFinished, setIsGameFinished] = useState(false);
   const [players, setPlayers] = useState<string[]>([]);
   const [winner, setWinner] = useState<string | null>(null);
   const [winCombination, setWinCombination] = useState<number[] | null>(null);
@@ -48,7 +23,15 @@ const GamePage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') || 'Гость';
   const room = searchParams.get('room') || 'Без комнаты';
+  const rawGameMode = searchParams.get('gameMode');
+  const gameMode: GameModeType = isGameModeType(rawGameMode) ? rawGameMode : 'Standard';
 
+  useEffect(() => {
+    if (!name || !room || !gameMode) {
+      navigate('/');
+    }
+  })
+  
   useEffect(() => {
     if (role === '') socket.emit('readyForRole', { name, room });
   }, []);
@@ -65,11 +48,9 @@ const GamePage: React.FC = () => {
       setIsGameStarted(updatedPlayers.length === 2);
     });
 
-    socket.on('moveMade', ({ index, player }) => {
-      const newSquares = squares.slice();
-      newSquares[index] = player;
+    socket.on('moveMade', ({ currentPlayer, newSquares }) => {
       setSquares(newSquares);
-      setCurrentPlayer(player === 'X' ? 'O' : 'X');
+      setCurrentPlayer(currentPlayer);
       const gameResult = calculateWinner(newSquares);
       const partWinner = gameResult ? gameResult.winner : null;
       const partWinningCombination = gameResult ? gameResult.combination : null;
@@ -79,12 +60,11 @@ const GamePage: React.FC = () => {
       }
     });
 
-    socket.on('gemeRestarted', () => {
-        setSquares(Array(9).fill(null));
+    socket.on('gemeRestarted', ({ currentPlayer, newSquares }) => {
+        setSquares(newSquares);
         setWinner(null);
         setWinCombination(null);
-        setCurrentPlayer('X');
-
+        setCurrentPlayer(currentPlayer);
     })
 
     return () => {
@@ -96,15 +76,28 @@ const GamePage: React.FC = () => {
   }, [room, name, squares]);
 
   const handleSquareClick = (index: number) => {
-    if (squares[index] || winner || role !== currentPlayer) {
-      // Блокируем ход, если клетка занята, есть победитель или игрок не на своем ходу
-      return;
-    }
+    if (winner || role !== currentPlayer) return;
 
-    const newSquares = squares.slice();
-    newSquares[index] = role;
-    setSquares(newSquares);
-    socket.emit('move', { room, index, player: role });
+    const { marker, isValid } = processMove({
+      index,
+      squares,
+      role,
+      gameMode: gameMode as 'Standard' | 'Half',
+    });
+
+    if (!isValid) return; // Неправильный ход
+
+    const updatedSquares = [...squares];
+    updatedSquares[index] = marker;
+
+    setSquares(updatedSquares);
+
+    socket.emit('move', {
+      room,
+      index,
+      marker,
+      player: role,
+    });
   };
 
   const handleRestart = () => {
@@ -127,6 +120,7 @@ const GamePage: React.FC = () => {
         playerRole={role}
         playerName={name}
         thisRoom={room}
+        mode={gameMode}
         exitRoom={handleLeaveRoom}
       />
       <Desk

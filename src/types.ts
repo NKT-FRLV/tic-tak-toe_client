@@ -1,0 +1,1 @@
+export type GameModeType = 'Standard' | 'Half' |  'Blitz';

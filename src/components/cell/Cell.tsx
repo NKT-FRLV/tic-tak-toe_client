@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import CellContent from './CellContent';
 
 interface CellProps {
-  value: 'X' | 'O' | '' | null;
+  value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null;
   isWinCell: boolean;
   isDisabled: boolean;
   onClick: () => void;

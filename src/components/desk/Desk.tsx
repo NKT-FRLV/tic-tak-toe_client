@@ -2,15 +2,13 @@ import React from 'react';
 import Cell from '../cell/Cell';
 
 interface DeskProps {
-  squares: ('X' | 'O' | '' | null)[];
+  squares: ('X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null)[];
   winCombination: number[] | null;
   isGameStarted: boolean;
   onSquareClick: (index: number) => void;
 }
 
 const Desk: React.FC<DeskProps> = ({ squares, winCombination, isGameStarted, onSquareClick }) => {
-
-
 
   return (
     <div className="deskWrapper">
