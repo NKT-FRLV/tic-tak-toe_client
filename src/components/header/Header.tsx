@@ -9,6 +9,7 @@ interface HeaderProps {
     thisRoom: string;
     playerName: string;
     mode: GameModeType;
+    scores: {name: string; score: number}[];
     exitRoom: () => void
 }
 
@@ -19,6 +20,7 @@ const Header: React.FC<HeaderProps> = ({
     thisRoom,
     playerName,
     mode,
+    scores,
     exitRoom
 }) => {
 
@@ -31,6 +33,16 @@ const Header: React.FC<HeaderProps> = ({
                 <h1>Игрок: {playerName}</h1>
                 <h1>Комната : {thisRoom}</h1>
                 <h1>Режим игры: {mode}</h1>
+                {mode === 'Half' && (
+                    <div className="scoreboard">
+                    <h3>Счет:</h3>
+                    {scores.map((player, index) => (
+                      <div key={index}>
+                        {player.name}: {player.score}
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <button className='standard-button' onClick={exitRoom}>Выйти из комнаты</button>
             </div>
             <div className='header__current-step-info'>
@@ -49,8 +61,8 @@ const Header: React.FC<HeaderProps> = ({
                     {isWinner ? (
                         <motion.h2
                             animate={{ 
-                                color: gameStatus.includes(playerRole) ? '#FFD700' : '#FFC1C1',
-                                scale: gameStatus.includes(playerRole) ? 1.2 : 0.8
+                                color: gameStatus.includes(playerName) ? '#FFD700' : '#FFC1C1',
+                                scale: gameStatus.includes(playerName) ? 1.2 : 0.8
                             }}
                             transition={{ duration: 0.5 }}
                             style={{ fontWeight: 'bold' }}

@@ -28,6 +28,9 @@ const LoginPage = () => {
         if (isDisabled) return
 
         e.preventDefault();
+        
+        socket.off('error');
+        socket.off('allowed');
 
         socket.emit('joinRoom', values);
 

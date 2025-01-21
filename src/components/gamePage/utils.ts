@@ -1,4 +1,4 @@
-import { GameModeType } from "../../types";
+import { GameModeType, SquareValue, ProcessMoveParams } from "../../types";
 interface WinnerAndCombination {
     winner: string | null;
     combination: number[] | null;
@@ -31,17 +31,6 @@ export const isGameModeType = (value: string | null): value is GameModeType => {
     if (value === null) return false;
     return ['Standard', 'Half', 'Blitz'].includes(value);
 };
-
-
-type SquareValue = 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null;
-type GameMode = 'Standard' | 'Half';
-
-interface ProcessMoveParams {
-index: number;
-squares: SquareValue[];
-role: 'X' | 'O' | '';
-gameMode: GameMode;
-}
   
 export const processMove = ({
     index,

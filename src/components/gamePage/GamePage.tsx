@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculateWinner, processMove, isGameModeType } from './utils';
-import type { GameModeType } from '../../types';
+import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState } from '../../types';
 import socket from '../../socket/socket';
 import Desk from '../desk/Desk';
 import Header from '../header/Header';
-
-type SquareValue = 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null;
 
 const GamePage: React.FC = () => {
   const navigate = useNavigate();
@@ -19,98 +17,89 @@ const GamePage: React.FC = () => {
   const [winCombination, setWinCombination] = useState<number[] | null>(null);
   const [role, setRole] = useState<'X' | 'O' | ''>(''); // Роль игрока ("X" или "O")
   const [currentPlayer, setCurrentPlayer] = useState<string>('X'); // Игрок, который сейчас ходит
+  const [scores, setScores] = useState<{ name: string; score: number }[]>([]);
 
   const [searchParams] = useSearchParams();
-  const name = searchParams.get('name') || 'Гость';
-  const room = searchParams.get('room') || 'Без комнаты';
+  const name = searchParams.get('name');
+  const room = searchParams.get('room');
   const rawGameMode = searchParams.get('gameMode');
   const gameMode: GameModeType = isGameModeType(rawGameMode) ? rawGameMode : 'Standard';
 
   useEffect(() => {
     if (!name || !room || !gameMode) {
       navigate('/');
+    } else if (role === '') {
+      console.log('Отправка события readyForRole');
+      socket.emit('readyForRole', { name, room });
     }
-  })
-  
-  useEffect(() => {
-    if (role === '') socket.emit('readyForRole', { name, room });
-  }, []);
+  }, [ name, room, gameMode, role, navigate ]);
 
   useEffect(() => {
+    const handlePlayerRole = ({ role }: { role: 'X' | 'O' }) => {
+      setRole(role);
+      console.log(`Ваша роль: ${role}`);
+    }
     
-    socket.on('playerRole', ({ role }) => {
-        setRole(role);
-        console.log(`Ваша роль: ${role}`);
-    });
+    socket.on('playerRole', handlePlayerRole);
 
-    socket.on('updatePlayers', (updatedPlayers) => {
-      setPlayers(updatedPlayers.map((player: { name: string }) => player.name));
+    const handleUpdatePlayers = (updatedPlayers: PleyerType[]) => {
+      setPlayers(updatedPlayers.map((player) => player.name));
       setIsGameStarted(updatedPlayers.length === 2);
-    });
+    }
 
-    socket.on('moveMade', ({ currentPlayer, newSquares }) => {
-      setSquares(newSquares);
+    socket.on('updatePlayers', handleUpdatePlayers);
+
+    const handleStateUpdated = ({ players, currentPlayer, squares, winCombination, winner }: ReternedServerState) => {
+      setScores(players.map((p) => ({ name: p.name, score: p.score })));
       setCurrentPlayer(currentPlayer);
-      const gameResult = calculateWinner(newSquares);
-      const partWinner = gameResult ? gameResult.winner : null;
-      const partWinningCombination = gameResult ? gameResult.combination : null;
-      if (gameResult) {
-        setWinner(partWinner);
-        setWinCombination(partWinningCombination);
-      }
-    });
+      setSquares(squares);
+      setWinCombination(winCombination);
+      setWinner(winner);
+    }
+    
+    socket.on('stateUpdated', handleStateUpdated);
 
-    socket.on('gemeRestarted', ({ currentPlayer, newSquares }) => {
+    const handleGameRestarted = ({ currentPlayer, newSquares, players }: ServerRestartState) => {
         setSquares(newSquares);
+        setScores(players.map((p) => ({ name: p.name, score: p.score })));
         setWinner(null);
         setWinCombination(null);
         setCurrentPlayer(currentPlayer);
-    })
+    }
+
+    socket.on('gameRestarted', handleGameRestarted)
 
     return () => {
-        socket.off('playerRole');
-        socket.off('updatePlayers');
-        socket.off('moveMade');
-        socket.off('gemeRestarted');
+        socket.off('playerRole', handlePlayerRole);
+        socket.off('updatePlayers', handleUpdatePlayers);
+        socket.off('stateUpdated', handleStateUpdated);
+        socket.off('gameRestarted', handleGameRestarted);
     };
-  }, [room, name, squares]);
+  }, [room, name]); // Squares is delited from dependencies
 
-  const handleSquareClick = (index: number) => {
-    if (winner || role !== currentPlayer) return;
+  const handleSquareClick = useCallback((index: number) => {
+    if (role !== currentPlayer || winner) return;
 
     const { marker, isValid } = processMove({
-      index,
-      squares,
-      role,
-      gameMode: gameMode as 'Standard' | 'Half',
+        index,
+        squares,
+        role,
+        gameMode,
     });
 
-    if (!isValid) return; // Неправильный ход
+    if (!isValid) return;
 
-    const updatedSquares = [...squares];
-    updatedSquares[index] = marker;
-
-    setSquares(updatedSquares);
-
-    socket.emit('move', {
-      room,
-      index,
-      marker,
-      player: role,
-    });
-  };
+    socket.emit('move', { room, index, marker, player: role });
+  }, [role, currentPlayer, winner, squares, gameMode, room]);
 
   const handleRestart = () => {
-    setSquares(Array(9).fill(null));
-    setWinner(null);
-    setWinCombination(null);
     socket.emit('restartGame', { room });
   };
 
   const handleLeaveRoom = useCallback(() => {
     socket.emit('leaveRoom', { name, room });
     navigate('/');
-  },[])
+}, [name, room, navigate]);
 
   return (
     <div className="game-page">
@@ -118,9 +107,10 @@ const GamePage: React.FC = () => {
         gameStatus={winner ? `Победитель: ${winner}` : `${currentPlayer}`}
         isGameStarted={isGameStarted}
         playerRole={role}
-        playerName={name}
-        thisRoom={room}
+        playerName={name || 'unknown'}
+        thisRoom={room || 'unknown'}
         mode={gameMode}
+        scores={scores}
         exitRoom={handleLeaveRoom}
       />
       <Desk
