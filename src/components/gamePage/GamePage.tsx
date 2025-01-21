@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { calculateWinner, processMove, isGameModeType } from './utils';
+import { processMove, isGameModeType } from './utils';
 import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState } from '../../types';
 import socket from '../../socket/socket';
 import Desk from '../desk/Desk';
