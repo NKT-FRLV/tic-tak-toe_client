@@ -38,7 +38,8 @@ export const processMove = ({
     role,
     gameMode,
   }: ProcessMoveParams): { marker: SquareValue; isValid: boolean } => {
-    const currentValue = squares[index];
+    const copySquares = [...squares];
+    const currentValue = copySquares[index];
     let marker: SquareValue = null;
     let isValid = true;
   
@@ -61,6 +62,6 @@ export const processMove = ({
     } else if (gameMode === 'Standard') {
       marker = role; // Стандартный ход
     }
-  
+    
     return { marker, isValid };
   };

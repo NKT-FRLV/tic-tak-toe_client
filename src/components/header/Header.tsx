@@ -9,7 +9,6 @@ interface HeaderProps {
     thisRoom: string;
     playerName: string;
     mode: GameModeType;
-    scores: {name: string; score: number}[];
     exitRoom: () => void
 }
 
@@ -20,7 +19,6 @@ const Header: React.FC<HeaderProps> = ({
     thisRoom,
     playerName,
     mode,
-    scores,
     exitRoom
 }) => {
 
@@ -28,21 +26,11 @@ const Header: React.FC<HeaderProps> = ({
 
     return (
 
-        <div className='header'>
+        <header className='header'>
             <div className='header__info'>
                 <h1>Игрок: {playerName}</h1>
                 <h1>Комната : {thisRoom}</h1>
                 <h1>Режим игры: {mode}</h1>
-                {mode === 'Half' && (
-                    <div className="scoreboard">
-                    <h3>Счет:</h3>
-                    {scores.map((player, index) => (
-                      <div key={index}>
-                        {player.name}: {player.score}
-                      </div>
-                    ))}
-                  </div>
-                )}
                 <button className='standard-button' onClick={exitRoom}>Выйти из комнаты</button>
             </div>
             <div className='header__current-step-info'>
@@ -53,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        {isGameStarted ? 'Игра началась' : 'Дождитесь соперника и начните игру'}
+                        {isGameStarted ? 'Игра началась' : 'Дождитесь соперника'}
                     </motion.h2>
                 </AnimatePresence>
                 <h2 style={{ color: '#00FF00'}}>Вы играете за: {playerRole}</h2>
@@ -85,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({
                     )}
                 </AnimatePresence>
             </div>
-        </div>
+        </header>
     )
 };
 

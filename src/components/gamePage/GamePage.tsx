@@ -3,21 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { processMove, isGameModeType } from './utils';
-import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState } from '../../types';
+import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState, RoleProps, WinnerType } from '../../types';
 import socket from '../../socket/socket';
 import Desk from '../desk/Desk';
 import Header from '../header/Header';
+import PlayersList from '../playersList/PlayersList';
+
 
 const GamePage: React.FC = () => {
   const navigate = useNavigate();
+  console.log('render gamePage'); // Надо пофиксить перерендеры, сейчас их 3 в момент подключения к комнате
   const [squares, setSquares] = useState<SquareValue[]>(Array(9).fill(null));
   const [isGameStarted, setIsGameStarted] = useState(false);
   const [players, setPlayers] = useState<string[]>([]);
-  const [winner, setWinner] = useState<string | null>(null);
+  const [winner, setWinner] = useState<WinnerType | null>(null);
   const [winCombination, setWinCombination] = useState<number[] | null>(null);
   const [role, setRole] = useState<'X' | 'O' | ''>(''); // Роль игрока ("X" или "O")
   const [currentPlayer, setCurrentPlayer] = useState<string>('X'); // Игрок, который сейчас ходит
   const [scores, setScores] = useState<{ name: string; score: number }[]>([]);
+  
 
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name');
@@ -29,45 +33,50 @@ const GamePage: React.FC = () => {
     if (!name || !room || !gameMode) {
       navigate('/');
     } else if (role === '') {
-      console.log('Отправка события readyForRole');
       socket.emit('readyForRole', { name, room });
     }
-  }, [ name, room, gameMode, role, navigate ]);
+  }, []);
 
   useEffect(() => {
-    const handlePlayerRole = ({ role }: { role: 'X' | 'O' }) => {
+    const handlePlayerRole = ({ role }: RoleProps ) => {
       setRole(role);
       console.log(`Ваша роль: ${role}`);
     }
-    
-    socket.on('playerRole', handlePlayerRole);
 
     const handleUpdatePlayers = (updatedPlayers: PleyerType[]) => {
       setPlayers(updatedPlayers.map((player) => player.name));
+      setScores( updatedPlayers.map((player) => ({ name: player.name, score: player.score })));
       setIsGameStarted(updatedPlayers.length === 2);
     }
 
-    socket.on('updatePlayers', handleUpdatePlayers);
-
     const handleStateUpdated = ({ players, currentPlayer, squares, winCombination, winner }: ReternedServerState) => {
-      setScores(players.map((p) => ({ name: p.name, score: p.score })));
       setCurrentPlayer(currentPlayer);
       setSquares(squares);
       setWinCombination(winCombination);
       setWinner(winner);
+      if (gameMode === 'Half') {
+        setScores(players.map((p) => ({ name: p.name, score: p.score })));
+        if ( winner === 'Ничья') {
+          socket.emit('restartGame', { room });
+        }
+      }
+
     }
-    
-    socket.on('stateUpdated', handleStateUpdated);
 
     const handleGameRestarted = ({ currentPlayer, newSquares, players }: ServerRestartState) => {
         setSquares(newSquares);
-        setScores(players.map((p) => ({ name: p.name, score: p.score })));
         setWinner(null);
         setWinCombination(null);
         setCurrentPlayer(currentPlayer);
+        if (gameMode === 'Half') {
+          setScores(players.map((p) => ({ name: p.name, score: p.score })));
+        }
     }
 
-    socket.on('gameRestarted', handleGameRestarted)
+    socket.off('playerRole').on('playerRole', handlePlayerRole);
+    socket.off('updatePlayers').on('updatePlayers', handleUpdatePlayers);
+    socket.off('stateUpdated').on('stateUpdated', handleStateUpdated);
+    socket.off('gameRestarted').on('gameRestarted', handleGameRestarted);
 
     return () => {
         socket.off('playerRole', handlePlayerRole);
@@ -75,7 +84,7 @@ const GamePage: React.FC = () => {
         socket.off('stateUpdated', handleStateUpdated);
         socket.off('gameRestarted', handleGameRestarted);
     };
-  }, [room, name]); // Squares is delited from dependencies
+  }, []); // Squares is delited from dependencies
 
   const handleSquareClick = useCallback((index: number) => {
     if (role !== currentPlayer || winner) return;
@@ -97,9 +106,10 @@ const GamePage: React.FC = () => {
   };
 
   const handleLeaveRoom = useCallback(() => {
-    socket.emit('leaveRoom', { name, room });
-    navigate('/');
-}, [name, room, navigate]);
+    // socket.emit('manualDisconnect', { room });
+    socket.disconnect(); // Это отключит сокет после отправки данных
+    navigate('/', { state: { from: '/game' } });
+  }, [room, navigate]);
 
   return (
     <div className="game-page">
@@ -110,7 +120,6 @@ const GamePage: React.FC = () => {
         playerName={name || 'unknown'}
         thisRoom={room || 'unknown'}
         mode={gameMode}
-        scores={scores}
         exitRoom={handleLeaveRoom}
       />
       <Desk
@@ -118,6 +127,7 @@ const GamePage: React.FC = () => {
         winCombination={winCombination}
         onSquareClick={handleSquareClick}
         isGameStarted={isGameStarted}
+        isCurrentPlayer={role === currentPlayer}
       />
       
       <footer className="footer">
@@ -135,12 +145,7 @@ const GamePage: React.FC = () => {
             </motion.button>
           )}
         </AnimatePresence>
-        <h3>Игроки в комнате:</h3>
-        <ul className="room-players-list">
-          {players.map((player, index) => (
-            <li key={index}>{player}</li>
-          ))}
-        </ul>
+        <PlayersList players={players} scores={scores} gameMode={gameMode} />
       </footer>
     </div>
   );

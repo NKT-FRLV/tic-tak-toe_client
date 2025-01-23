@@ -6,9 +6,10 @@ interface DeskProps {
   winCombination: number[] | null;
   isGameStarted: boolean;
   onSquareClick: (index: number) => void;
+  isCurrentPlayer: boolean;
 }
 
-const Desk: React.FC<DeskProps> = ({ squares, winCombination, isGameStarted, onSquareClick }) => {
+const Desk: React.FC<DeskProps> = ({ squares, winCombination, isGameStarted, isCurrentPlayer, onSquareClick }) => {
 
   return (
     <div className="deskWrapper">
@@ -19,6 +20,7 @@ const Desk: React.FC<DeskProps> = ({ squares, winCombination, isGameStarted, onS
               isDisabled={isGameStarted}
               isWinCell={winCombination?.includes(index) || false}
               value={value}
+              isCurrentPlayer={isCurrentPlayer}
               onClick={() => onSquareClick(index)}
             />
         ))}

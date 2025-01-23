@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import styles from './cellSvg.module.css'
 
 const draw = {
   hidden: { pathLength: 0, opacity: 0 },
@@ -39,6 +40,7 @@ const CellContent = ({ value }: { value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | 
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          className={styles.svg}
           initial="hidden"
           animate={value === 'X' ? 'visible' : 'half'}
           exit="exit"
@@ -48,7 +50,8 @@ const CellContent = ({ value }: { value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | 
             y1="4"
             x2="20"
             y2="20"
-            stroke="#FF0088"
+            // stroke="#FF0088"
+            className={styles.line}
             variants={draw}
           />
           {value !== 'X_HALF' && (
@@ -57,7 +60,8 @@ const CellContent = ({ value }: { value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | 
               y1="4"
               x2="4"
               y2="20"
-              stroke="#FF0088"
+              // stroke="#FF0088"
+              className={styles.line}
               variants={draw}
             />
           )}
@@ -70,6 +74,7 @@ const CellContent = ({ value }: { value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | 
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="none"
+          className={styles.svg}
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
@@ -82,7 +87,8 @@ const CellContent = ({ value }: { value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | 
             cx="12"
             cy="12"
             r="8"
-            stroke="#0D63F8"
+            // stroke="#0D63F8"
+            className={styles.circle}
             variants={draw}
           />
         </motion.svg>

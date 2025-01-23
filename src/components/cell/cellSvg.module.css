@@ -1,0 +1,12 @@
+
+.svg {
+    filter: drop-shadow(0 6px 2px rgb(0, 0, 0));
+}
+
+.line {
+    stroke: #FF0088;
+}
+
+.circle {
+    stroke: #0D63F8;
+}

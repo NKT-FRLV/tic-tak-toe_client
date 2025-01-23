@@ -1,6 +1,7 @@
 export type GameModeType = 'Standard' | 'Half' |  'Blitz';
 export type RoleType = 'X' | 'O' | ''; 
-export type WinnerType = Exclude<RoleType, ''>
+export type RoleProps = { role: Exclude<RoleType, ''> }
+export type WinnerType = 'X' | 'O' | 'Ничья';
 export type PleyerType = {id: string, name: string, role: string, score: number}
 export type SquareValue = 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null;
 

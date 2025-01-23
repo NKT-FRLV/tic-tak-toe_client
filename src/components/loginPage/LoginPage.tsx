@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import socket from '../../socket/socket'
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -16,8 +16,16 @@ interface FormValues {
 
 const LoginPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [ values, setValues ] = useState<FormValues>({ name: '', room: '', gameMode: 'Standard' });
     const [ error, setError ] = useState('');
+
+    useEffect(() => {
+        // console.dir(location)
+        if (location.state?.from === '/game') {
+          socket.connect();
+        }
+      }, []);
 
     const handleChange = ({ target: { name, value } }: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent ) => {
         setValues((prev) => ({ ...prev, [name]: value }));
