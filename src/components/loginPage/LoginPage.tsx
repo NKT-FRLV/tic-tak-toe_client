@@ -90,7 +90,7 @@ const LoginPage = () => {
                         >
                         <MenuItem value={'Standard'}>Standart</MenuItem>
                         <MenuItem value={'Half'}>Half Mode</MenuItem>
-                        <MenuItem value={'Blitz'}>Blitz</MenuItem>
+                        {/* <MenuItem value={'Blitz'}>Blitz</MenuItem> */}
                         </Select>
                     </FormControl>
                 </div>

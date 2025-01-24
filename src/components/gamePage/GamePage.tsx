@@ -58,7 +58,7 @@ const GamePage: React.FC = () => {
       if (gameMode === 'Half') {
         setScores(players.map((p) => ({ name: p.name, score: p.score })));
         if ( winner === 'Ничья') {
-          socket.emit('restartGame', { room });
+          socket.emit('restartGame', { room, saveScores: true });
         }
       }
 
