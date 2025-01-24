@@ -107,7 +107,6 @@ const GamePage: React.FC = () => {
   };
 
   const handleLeaveRoom = useCallback(() => {
-    // socket.emit('manualDisconnect', { room });
     socket.disconnect();
     navigate('/', { state: { from: '/game' } });
   }, [room, navigate]);

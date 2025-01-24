@@ -29,11 +29,24 @@ const LoginPage = () => {
 
     const handleChange = ({ target: { name, value } }: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent ) => {
         setValues((prev) => ({ ...prev, [name]: value }));
+        if (error) setError('');
+        
     };
 
-    const hendleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
-        const isDisabled = Object.values(values).some((v) => !v);
-        if (isDisabled) return
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+    };
+
+    // В идеале бы этот обработчик ставить на тег формы.
+    const hendleSubmit = (e: React.SyntheticEvent<HTMLButtonElement>) => {
+        
+        if (!values.name || !values.room || !values.gameMode) {
+            setError('Заполните все поля!');
+            // e.preventDefault();
+            return;
+        } 
+
+        setError('');
 
         e.preventDefault();
         
@@ -56,7 +69,7 @@ const LoginPage = () => {
     <div className={styles.wrapper}>
         <div className={styles.container}>
             <h2 className={styles.title}>Join Game</h2>
-            <form className={styles.form} onSubmit={hendleSubmit}>
+            <form className={styles.form} onSubmit={handleFormSubmit}>
                 <input
                     name='name'
                     className={styles.input}
@@ -94,9 +107,10 @@ const LoginPage = () => {
                         </Select>
                     </FormControl>
                 </div>
-                <button className={styles.button} type='submit' > Войти в игру </button>
-                {error && <p className={styles.error}>{error}</p>}
+                <button className={styles.button} onClick={hendleSubmit} type='submit' > Войти в игру </button>
+                
             </form>
+            {error ? <p className={styles.error}>{error}</p> : <div className={styles.errorPlaceHolder}></div>}
         </div>
     </div>
   )
