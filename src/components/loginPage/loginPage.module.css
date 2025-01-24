@@ -2,11 +2,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 100px;
+    justify-content: center;
     width: auto;
     height: 100%;
     color: #646cffaa;
-    /* gap: 5px; */
 }
 
 .container {
