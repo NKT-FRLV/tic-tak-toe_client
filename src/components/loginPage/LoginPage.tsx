@@ -43,7 +43,7 @@ const LoginPage = () => {
         socket.emit('joinRoom', values);
 
         // Обработка ответа сервера
-        socket.once('error', ({ message }) => {
+        socket.on('error', ({ message }) => {
             setError(message);
         });
 

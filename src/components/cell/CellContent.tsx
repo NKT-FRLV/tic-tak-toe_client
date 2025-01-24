@@ -27,12 +27,18 @@ const draw = {
   },
 };
 
-const CellContent = ({ value }: { value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null }) => {
+interface Props {
+  value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null;
+  index: number;
+}
+
+const CellContent = ({ value, index }: Props) => {
+  // console.log(`${index}x`)
   return (
     <AnimatePresence mode="wait">
       {value === 'X' || value === 'X_HALF' ? (
         <motion.svg
-          key="x"
+          key={`${index}x`}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="none"
@@ -42,7 +48,7 @@ const CellContent = ({ value }: { value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | 
           strokeLinejoin="round"
           className={styles.svg}
           initial="hidden"
-          animate={value === 'X' ? 'visible' : 'half'}
+          animate={'visible'}
           exit="exit"
         >
           <motion.line
@@ -70,7 +76,7 @@ const CellContent = ({ value }: { value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | 
 
       {value === 'O' || value === 'O_HALF' ? (
         <motion.svg
-          key="o"
+          key={`${index}o`}
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="none"

@@ -17,6 +17,7 @@ const Desk: React.FC<DeskProps> = ({ squares, winCombination, isGameStarted, isC
         {squares.map((value, index) => (
             <Cell
               key={index}
+              id={index}
               isDisabled={isGameStarted}
               isWinCell={winCombination?.includes(index) || false}
               value={value}

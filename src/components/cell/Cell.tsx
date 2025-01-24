@@ -7,10 +7,11 @@ interface CellProps {
   isWinCell: boolean;
   isDisabled: boolean;
   isCurrentPlayer: boolean;
+  id: number;
   onClick: () => void;
 }
 
-const Cell: React.FC<CellProps> = ({ value, isWinCell, isDisabled, isCurrentPlayer, onClick }) => {
+const Cell: React.FC<CellProps> = ({ value, id, isWinCell, isDisabled, isCurrentPlayer, onClick }) => {
   const [isHoverable, setIsHoverable] = React.useState(false);
 
   useLayoutEffect(() => {
@@ -30,9 +31,9 @@ const Cell: React.FC<CellProps> = ({ value, isWinCell, isDisabled, isCurrentPlay
         backgroundColor: isWinCell ? '#FFD700' : '#333',
         color: isWinCell ? '#000' : '#fff',
       }}
-      whileHover={{
-        scale: isHoverable ? 1.03 : isWinCell ? 1.1 : 1,
-        backgroundColor: isHoverable ? '#6a6a6a' : isWinCell ? '#FFD700' :'#333'
+      whileHover={isWinCell ? {} : {
+        scale: isHoverable ? 1.03 : 1,
+        backgroundColor: isHoverable ? '#6a6a6a' : '#333',
       }}
       transition={{
         duration: 0.5,
@@ -43,7 +44,7 @@ const Cell: React.FC<CellProps> = ({ value, isWinCell, isDisabled, isCurrentPlay
       disabled={!isDisabled}
     >
       <AnimatePresence>
-        <CellContent value={value}/>
+        <CellContent value={value} index={id}/>
       </AnimatePresence>
     </motion.button>
   );

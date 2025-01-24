@@ -11,7 +11,7 @@ interface PlayersListProps {
 const PlayersList = ({ players, scores, gameMode }: PlayersListProps) => {
 
   return (
-    <>
+    <div className="room-players-wrapper">
         <h3>Игроки в комнате{gameMode === 'Half' ? ' и счет' : ''}:</h3>
         <ul className="room-players-list">
             <AnimatePresence>
@@ -42,7 +42,7 @@ const PlayersList = ({ players, scores, gameMode }: PlayersListProps) => {
                 }
             </AnimatePresence>
         </ul>
-    </>
+    </div>
   )
 }
 

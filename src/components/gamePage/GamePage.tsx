@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, use } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -31,7 +31,8 @@ const GamePage: React.FC = () => {
 
   useEffect(() => {
     if (!name || !room || !gameMode) {
-      navigate('/');
+      socket.disconnect();
+      navigate('/', { state: { from: '/game' } });
     } else if (role === '') {
       socket.emit('readyForRole', { name, room });
     }
@@ -107,7 +108,7 @@ const GamePage: React.FC = () => {
 
   const handleLeaveRoom = useCallback(() => {
     // socket.emit('manualDisconnect', { room });
-    socket.disconnect(); // Это отключит сокет после отправки данных
+    socket.disconnect();
     navigate('/', { state: { from: '/game' } });
   }, [room, navigate]);
 
