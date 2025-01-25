@@ -1,0 +1,37 @@
+.threeDotsLoader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 3.5rem;
+  }
+  
+  .dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    animation: three-dots-bounce 1.2s infinite ease-in-out;
+  }
+  
+  .dot:nth-child(1) {
+    animation-delay: -0.4s;
+  }
+  
+  .dot:nth-child(2) {
+    animation-delay: -0.2s;
+  }
+  
+  .dot:nth-child(3) {
+    animation-delay: 0s;
+  }
+  
+  @keyframes three-dots-bounce {
+    0%, 80%, 100% {
+      transform: scale(0);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  

@@ -7,7 +7,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import styles from './loginPage.module.css'
 import { GameModeType } from '../../types';
-import { ThreeDots } from 'react-loader-spinner';
+import Loader from '../../utilComponents/Loader'
 import { connectServer } from '../../socket/socket';
 
 interface FormValues {
@@ -118,7 +118,7 @@ const LoginPage = () => {
                 </div>
                 <button className={styles.button} onClick={hendleSubmit} type='submit' >
                 {isLoading ? (
-                    <ThreeDots
+                    <Loader
                         visible={true}
                         height="1rem"
                         width="3.5rem"
