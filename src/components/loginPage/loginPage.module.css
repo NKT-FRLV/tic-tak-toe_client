@@ -15,7 +15,7 @@
     justify-content: center;
     /* gap: 1.5rem; */
     padding: 20px 50px 20px;
-    max-width: 350px;
+    width: 350px;
     height: auto;
     background-color: #25263aaa;
     border-radius: 10px;
@@ -27,9 +27,9 @@
     flex-direction: column;
     align-items: start;
     justify-content: center;
-    width: auto;
+    width: 100%;
     height: auto;
-    gap: 10px;
+    /* gap: 10px; */
     margin: 1rem 0;
 }
 
@@ -41,10 +41,11 @@
     text-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
-.input {
+/* .input {
     width: 100%;
     height: 30px;
-    font-size: large;
+    font-size: 1rem;
+    padding: 0 5px;
     font-weight: bold;
     color: inherit;
     border-color: transparent;
@@ -59,16 +60,8 @@
     font-size: 1rem;
     opacity: 0.6;
     text-shadow: 0 6px 6px rgba(0,0,0,0.19), 0 3px 3px rgba(0,0,0,0.23);
-}
+} */
 
-.selectWrapper {
-  /* width: 100%; */
-  display: flex;
-  justify-content: start;
-  border-radius: 5px;
-  background-color: rgb(47, 45, 62);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-}
 
 .button {
     color: #646cffaa;

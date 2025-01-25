@@ -4,7 +4,10 @@ import socket from '../../socket/socket'
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import { ThemeProvider } from '@mui/material/styles';
+import customTheme from './customFormTheme'
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
 import styles from './loginPage.module.css'
 import { GameModeType } from '../../types';
 import Loader from '../../utilComponents/Loader'
@@ -13,13 +16,13 @@ import { connectServer } from '../../socket/socket';
 interface FormValues {
     name: string;
     room: string;
-    gameMode: GameModeType;
+    gameMode: GameModeType | '';
 }
 
 const LoginPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [ values, setValues ] = useState<FormValues>({ name: '', room: '', gameMode: 'Standard' });
+    const [ values, setValues ] = useState<FormValues>({ name: '', room: '', gameMode: '' });
     const [ error, setError ] = useState('');
     const [ isLoading, setIsLoading ] = useState(false);
 
@@ -30,7 +33,7 @@ const LoginPage = () => {
         }
       }, []);
 
-    const handleChange = ({ target: { name, value } }: React.ChangeEvent<HTMLInputElement> | SelectChangeEvent ) => {
+    const handleChange = ({ target: { name, value } }: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent ) => {
         setValues((prev) => ({ ...prev, [name]: value }));
         if (error) setError('');
         
@@ -78,45 +81,41 @@ const LoginPage = () => {
     <div className={styles.wrapper}>
         <div className={styles.container}>
             <h2 className={styles.title}>Join Game</h2>
+            <ThemeProvider theme={customTheme}>
             <form className={styles.form} onSubmit={handleFormSubmit}>
-                <input
-                    name='name'
-                    className={styles.input}
-                    type="text"
-                    placeholder='имя'
-                    onChange={handleChange}
+                <TextField
+                    label="Name"
+                    variant="standard"
+                    name="name"
                     value={values.name}
-                    autoComplete='off'
-                    required
-                />
-                <input
-                    name='room'
-                    className={styles.input}
-                    type="text"
-                    placeholder='комната'
                     onChange={handleChange}
-                    value={values.room}
-                    autoComplete='off'
-                    required
+                    fullWidth
+                    autoComplete="no" 
                 />
-                 <div className={styles.selectWrapper}>
-                    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                        <InputLabel id="demo-simple-select-standard-label">Game Mode</InputLabel>
+                    <TextField
+                    label="Room"
+                    variant="standard"
+                    name="room"
+                    value={values.room}
+                    onChange={handleChange}
+                    fullWidth
+                    sx={{ marginTop: '16px' }} // Отступ между инпутами
+                    />
+                    <FormControl variant="standard" fullWidth sx={{  minWidth: 120, marginTop: '10px' }}>
+                        <InputLabel id="game-mode-label">Game Mode</InputLabel>
                         <Select
-                        labelId="demo-simple-select-standard-label"
-                        id="demo-simple-select-standard"
-                        value={values.gameMode}
-                        onChange={handleChange}
-                        label="gameMode"
-                        name='gameMode'
+                            labelId="game-mode-label"
+                            id="demo-simple-select-standard"
+                            value={values.gameMode}
+                            onChange={handleChange}
+                            label="gameMode"
+                            name='gameMode'
                         >
                         <MenuItem value={'Standard'}>Standart</MenuItem>
                         <MenuItem value={'Half'}>Half Mode</MenuItem>
-                        {/* <MenuItem value={'Blitz'}>Blitz</MenuItem> */}
                         </Select>
                     </FormControl>
-                </div>
-                <button className={styles.button} onClick={hendleSubmit} type='submit' >
+                <button className={styles.button} disabled={isLoading} onClick={hendleSubmit} type='submit' >
                 {isLoading ? (
                     <Loader
                         visible={true}
@@ -129,6 +128,7 @@ const LoginPage = () => {
                 </button>
                 
             </form>
+            </ThemeProvider>
             {error ? <p className={styles.error}>{error}</p> : <div className={styles.errorPlaceHolder}></div>}
         </div>
     </div>
