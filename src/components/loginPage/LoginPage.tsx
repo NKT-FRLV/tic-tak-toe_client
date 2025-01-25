@@ -7,6 +7,8 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import styles from './loginPage.module.css'
 import { GameModeType } from '../../types';
+import { ThreeDots } from 'react-loader-spinner';
+import { connectServer } from '../../socket/socket';
 
 interface FormValues {
     name: string;
@@ -19,6 +21,7 @@ const LoginPage = () => {
     const location = useLocation();
     const [ values, setValues ] = useState<FormValues>({ name: '', room: '', gameMode: 'Standard' });
     const [ error, setError ] = useState('');
+    const [ isLoading, setIsLoading ] = useState(false);
 
     useEffect(() => {
         // console.dir(location)
@@ -38,32 +41,38 @@ const LoginPage = () => {
     };
 
     // В идеале бы этот обработчик ставить на тег формы.
-    const hendleSubmit = (e: React.SyntheticEvent<HTMLButtonElement>) => {
-        
-        if (!values.name || !values.room || !values.gameMode) {
-            setError('Заполните все поля!');
-            // e.preventDefault();
-            return;
-        } 
-
-        setError('');
-
+    const hendleSubmit = async (e: React.SyntheticEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        
-        socket.off('error');
-        socket.off('allowed');
-
-        socket.emit('joinRoom', values);
-
-        // Обработка ответа сервера
-        socket.on('error', ({ message }) => {
+    
+        if (!values.name || !values.room || !values.gameMode) {
+          setError("Заполните все поля!");
+          return;
+        }
+    
+        setIsLoading(true);
+        setError("");
+    
+        try {
+          await connectServer(socket);
+    
+          socket.emit("joinRoom", values);
+    
+          socket.on("error", ({ message }) => {
             setError(message);
-        });
-
-        socket.on('allowed', () => {
-            navigate(`/game?name=${values.name}&room=${values.room}&gameMode=${values.gameMode}`);
-        });
-    };
+            setIsLoading(false);
+          });
+    
+          socket.on("allowed", () => {
+            setIsLoading(false);
+            navigate(
+              `/game?name=${values.name}&room=${values.room}&gameMode=${values.gameMode}`
+            );
+          });
+        } catch (err: any) {
+          setError(err.message);
+          setIsLoading(false);
+        }
+      };
 
   return (
     <div className={styles.wrapper}>
@@ -107,7 +116,17 @@ const LoginPage = () => {
                         </Select>
                     </FormControl>
                 </div>
-                <button className={styles.button} onClick={hendleSubmit} type='submit' > Войти в игру </button>
+                <button className={styles.button} onClick={hendleSubmit} type='submit' >
+                {isLoading ? (
+                    <ThreeDots
+                        visible={true}
+                        height="1rem"
+                        width="3.5rem"
+                        color="#646cffaa"
+                        ariaLabel="three-dots-loading"
+                    />)
+                    : "Войти в игру"}
+                </button>
                 
             </form>
             {error ? <p className={styles.error}>{error}</p> : <div className={styles.errorPlaceHolder}></div>}

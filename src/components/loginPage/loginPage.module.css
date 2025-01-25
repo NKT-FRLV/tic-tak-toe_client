@@ -72,6 +72,9 @@
 
 .button {
     color: #646cffaa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 8px;
     border: 1px solid transparent;
     margin-top: 1rem;
