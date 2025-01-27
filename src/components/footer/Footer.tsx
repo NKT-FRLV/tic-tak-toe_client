@@ -1,10 +1,9 @@
-import React from 'react'
 import { Skills } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion'
 import { GameModeType } from '../../types';
 import styles from './footer.module.css'
 import PlayersList from '../playersList/PlayersList';
-import { s } from 'framer-motion/client';
+
 
 interface FooterProps {
     winner: string | null;
@@ -17,7 +16,7 @@ interface FooterProps {
 
 const Footer = ({ winner, gameMode, players, scores, skills, restartGame }: FooterProps) => {
 
-    const isWinnerInHalfMode = scores.some(({ name, score}) => score === 3);
+    const isWinnerInHalfMode = scores.some(({ name, score}) => score === 3 && name);
     const conditionHalf = gameMode === 'Half' && isWinnerInHalfMode && winner
     const conditionStandard = gameMode === 'Standard' && winner
 
