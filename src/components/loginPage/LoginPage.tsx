@@ -92,7 +92,7 @@ const LoginPage = () => {
                     fullWidth
                     autoComplete="no" 
                 />
-                    <TextField
+                <TextField
                     label="Room"
                     variant="standard"
                     name="room"
@@ -100,21 +100,21 @@ const LoginPage = () => {
                     onChange={handleChange}
                     fullWidth
                     sx={{ marginTop: '16px' }} // Отступ между инпутами
-                    />
-                    <FormControl variant="standard" fullWidth sx={{  minWidth: 120, marginTop: '10px' }}>
-                        <InputLabel id="game-mode-label">Game Mode</InputLabel>
-                        <Select
-                            labelId="game-mode-label"
-                            id="demo-simple-select-standard"
-                            value={values.gameMode}
-                            onChange={handleChange}
-                            label="gameMode"
-                            name='gameMode'
-                        >
-                        <MenuItem value={'Standard'}>Standart</MenuItem>
-                        <MenuItem value={'Half'}>Half Mode</MenuItem>
-                        </Select>
-                    </FormControl>
+                />
+                <FormControl variant="standard" fullWidth sx={{  minWidth: 120, marginTop: '10px' }}>
+                    <InputLabel id="game-mode-label">Game Mode</InputLabel>
+                    <Select
+                        labelId="game-mode-label"
+                        id="demo-simple-select-standard"
+                        value={values.gameMode}
+                        onChange={handleChange}
+                        label="gameMode"
+                        name='gameMode'
+                    >
+                    <MenuItem value={'Standard'}>Standart</MenuItem>
+                    <MenuItem value={'Half'}>Half Mode</MenuItem>
+                    </Select>
+                </FormControl>
                 <button className={styles.button} disabled={isLoading} onClick={hendleSubmit} type='submit' >
                 {isLoading ? (
                     <Loader

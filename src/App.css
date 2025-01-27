@@ -38,53 +38,6 @@
   gap: 20px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
-  padding: 1rem 2rem;
-  font-size: 0.8rem;
-}
-
-.header__info {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.header__current-step-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  min-width: 200px;
-}
-
-.room-players-wrapper {
-  display: flex;
-  gap: 2.5rem;
-  justify-content: center;
-  align-items: center;
-  margin-top: auto;
-}
-
-.room-players-list {
-  list-style: none;
-}
-
-.room-players-list li {
-  min-width: 200px;
-}
-
-.room-players-list li:nth-child(1) {
-  border-bottom: #333 solid 2px;
-  padding: 0 1rem 0.5rem;
-}
-.room-players-list li:nth-child(2) {
-  padding: 0.5rem 1rem 0;
-}
-
 .deskWrapper {
   display: flex;
   justify-content: center;
@@ -116,16 +69,6 @@
   /* border-radius: 2px; */
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12); */
 }
-
-.footer {
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  flex-grow: 1;
-  font-size: 1.4rem;
-  margin-bottom: 1.5rem;
-}
-
 
 @media screen and (max-width: 900px) {
 

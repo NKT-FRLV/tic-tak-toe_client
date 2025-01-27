@@ -13,11 +13,17 @@ interface CellProps {
 
 const Cell: React.FC<CellProps> = ({ value, id, isWinCell, isDisabled, isCurrentPlayer, onClick }) => {
   const [isHoverable, setIsHoverable] = React.useState(false);
+  const [isTouchPad, setIsTouchPad] = React.useState(false);
 
   useLayoutEffect(() => {
     const isHoverableValue = ['X_HALF', 'O_HALF', null, ''].includes(value);
     const mediaQuery = window.matchMedia('(hover: hover)');
-    if (mediaQuery.matches && !isWinCell && isHoverableValue && isCurrentPlayer) {
+
+    if (mediaQuery.matches) {
+      setIsTouchPad(true)
+    }
+    
+    if (!isWinCell && isHoverableValue && isCurrentPlayer) {
       setIsHoverable(true);
     } else {
       setIsHoverable(false);
@@ -31,7 +37,7 @@ const Cell: React.FC<CellProps> = ({ value, id, isWinCell, isDisabled, isCurrent
         backgroundColor: isWinCell ? '#FFD700' : '#333',
         color: isWinCell ? '#000' : '#fff',
       }}
-      whileHover={isWinCell ? {} : {
+      whileHover={isWinCell || isTouchPad ? {} : {
         scale: isHoverable ? 1.03 : 1,
         backgroundColor: isHoverable ? '#6a6a6a' : '#333',
       }}

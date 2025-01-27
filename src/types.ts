@@ -1,8 +1,9 @@
-export type GameModeType = 'Standard' | 'Half' |  'Blitz';
+export type GameModeType = 'Standard' | 'Half';
 export type RoleType = 'X' | 'O' | ''; 
-export type RoleProps = { role: Exclude<RoleType, ''> }
+export type RoleProps = { role: Exclude<RoleType, ''>, skills: Skills };
 export type WinnerType = 'X' | 'O' | 'Ничья';
-export type PleyerType = {id: string, name: string, role: string, score: number}
+export type Skills = Record<string, number>;
+export type PleyerType = {id: string, name: string, role: string, score: number, skills?: Skills}
 export type SquareValue = 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null;
 
 export interface StateServer {
@@ -33,4 +34,6 @@ export interface ProcessMoveParams {
     squares: SquareValue[];
     role: RoleType;
     gameMode: GameModeType;
+    skills: Skills;
+    updateSkills: (newSkills: Skills) => void;
 }

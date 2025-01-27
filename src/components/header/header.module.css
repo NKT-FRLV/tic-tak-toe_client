@@ -1,0 +1,111 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1.6rem;
+    border-radius: 8px;
+    color: #ffffff;
+    max-width: 100%;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: flex-start;
+    min-width: 50%;
+    text-align: left;
+}
+
+.info h1 {
+    font-size: 1.2rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 80%; /* Ограничиваем длину */
+    color: #ffd700;
+}
+
+.stepInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    max-width: 50%;
+    text-align: right;
+}
+
+.stepInfo h2 {
+    font-size: 1.2rem;
+    margin: 0;
+    color: #ffffff;
+}
+
+.button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    background-color: #1a1a1a;
+    color: #46a0ff;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.button:hover {
+    box-shadow: 0 0 10px rgba(70, 160, 255, 0.8);
+    color: #ffffff;
+}
+
+.button:focus {
+    outline: none;
+}
+
+@media screen and (max-width: 900px) {
+    .header {
+        padding: 0.6rem 1rem;
+    }
+
+    .info h1 {
+        font-size: 0.9rem;
+        max-width: 150px;
+    }
+
+    .stepInfo h2 {
+        font-size: 0.9rem;
+    }
+
+    .button {
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .header {
+
+
+        padding: 0.5rem 0.8rem;
+    }
+
+    .info, .stepInfo {
+        max-width: 100%;
+
+    }
+
+    .info h1 {
+        font-size: 0.7rem;
+    }
+
+    .stepInfo h2 {
+        font-size: 0.7rem;
+    }
+
+    .button {
+        font-size: 0.7rem;
+        padding: 0.4rem 0.8rem;
+    }
+
+}

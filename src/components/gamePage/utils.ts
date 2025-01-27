@@ -29,14 +29,15 @@ export const calculateWinner = (squares: (string | null)[]): WinnerAndCombinatio
 
 export const isGameModeType = (value: string | null): value is GameModeType => {
     if (value === null) return false;
-    return ['Standard', 'Half', 'Blitz'].includes(value);
+    return ['Standard', 'Half'].includes(value);
 };
-  
-export const processMove = ({
+  export const processMove = ({
     index,
     squares,
     role,
     gameMode,
+    skills,
+    updateSkills
   }: ProcessMoveParams): { marker: SquareValue; isValid: boolean } => {
     const copySquares = [...squares];
     const currentValue = copySquares[index];
@@ -52,11 +53,22 @@ export const processMove = ({
         marker = 'X'; // Завершение крестика
       } else if (currentValue === 'O_HALF' && role === 'O') {
         marker = 'O'; // Завершение нолика
-    } else if (currentValue === 'X_HALF' && role === 'O') {
-        marker = null;
-      } else if (currentValue === 'O_HALF' && role === 'X') {
-        marker = null;
+    } else if (
+      (currentValue === 'X_HALF' && role === 'O') ||
+      (currentValue === 'O_HALF' && role === 'X')
+    ) {
+      // Проверяем лимит стираний
+    
+      if (skills.borrow > 0) {
+        marker = null; // Стираем половинчатую клетку
+        updateSkills({
+          ...skills,
+          borrow: skills.borrow - 1
+        });
       } else {
+        isValid = false; // Нельзя стирать, лимит исчерпан
+      }
+    } else {
         isValid = false; // Нельзя завершить чужой половинчатый ход
       }
     } else if (gameMode === 'Standard') {

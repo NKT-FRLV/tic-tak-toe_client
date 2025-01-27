@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { processMove, isGameModeType } from './utils';
-import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState, RoleProps, WinnerType } from '../../types';
+import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState, RoleProps, WinnerType, Skills } from '../../types';
 import socket from '../../socket/socket';
 import Desk from '../desk/Desk';
 import Header from '../header/Header';
-import PlayersList from '../playersList/PlayersList';
+import Footer from '../footer/Footer';
 
 
 const GamePage: React.FC = () => {
@@ -21,6 +20,7 @@ const GamePage: React.FC = () => {
   const [role, setRole] = useState<'X' | 'O' | ''>(''); // Роль игрока ("X" или "O")
   const [currentPlayer, setCurrentPlayer] = useState<string>('X'); // Игрок, который сейчас ходит
   const [scores, setScores] = useState<{ name: string; score: number }[]>([]);
+  const [skills, setSkills] = useState<Skills>({});
   
 
   const [searchParams] = useSearchParams();
@@ -28,7 +28,7 @@ const GamePage: React.FC = () => {
   const room = searchParams.get('room');
   const rawGameMode = searchParams.get('gameMode');
   const gameMode: GameModeType = isGameModeType(rawGameMode) ? rawGameMode : 'Standard';
-
+  console.log(skills)
   useEffect(() => {
     if (!name || !room || !gameMode) {
       socket.disconnect();
@@ -39,8 +39,10 @@ const GamePage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const handlePlayerRole = ({ role }: RoleProps ) => {
+    const handlePlayerRole = ({ role, skills }: RoleProps ) => {
       setRole(role);
+
+      setSkills({...skills});
       console.log(`Ваша роль: ${role}`);
     }
 
@@ -57,6 +59,14 @@ const GamePage: React.FC = () => {
       setWinner(winner);
       if (gameMode === 'Half') {
         setScores(players.map((p) => ({ name: p.name, score: p.score })));
+        if (winCombination && winner === name) {
+          
+          // Добавляем бонусный скилл borrow для победившего игрока
+
+            setSkills(prev => ({...prev, borrow: prev.borrow + 1}));
+
+        }
+
         if ( winner === 'Ничья') {
           socket.emit('restartGame', { room, saveScores: true });
         }
@@ -95,6 +105,8 @@ const GamePage: React.FC = () => {
         squares,
         role,
         gameMode,
+        skills,
+        updateSkills: (newSkills) => setSkills(newSkills),
     });
 
     if (!isValid) return;
@@ -102,9 +114,9 @@ const GamePage: React.FC = () => {
     socket.emit('move', { room, index, marker, player: role });
   }, [role, currentPlayer, winner, squares, gameMode, room]);
 
-  const handleRestart = () => {
+  const handleRestart = useCallback(() => {
     socket.emit('restartGame', { room });
-  };
+  },[room]);
 
   const handleLeaveRoom = useCallback(() => {
     socket.disconnect();
@@ -129,24 +141,7 @@ const GamePage: React.FC = () => {
         isGameStarted={isGameStarted}
         isCurrentPlayer={role === currentPlayer}
       />
-      
-      <footer className="footer">
-        <AnimatePresence>
-          {winner && (
-            <motion.button
-              className="standard-button"
-              initial={{ opacity: 0, translateY: 0 }}
-              animate={{ opacity: 1, translateY: -10 }}
-              exit={{ opacity: 0, translateY: 0  }}
-              transition={{ duration: 0.5, delay: 1 }}
-              onClick={handleRestart}
-            >
-              Начать заново
-            </motion.button>
-          )}
-        </AnimatePresence>
-        <PlayersList players={players} scores={scores} gameMode={gameMode} />
-      </footer>
+      <Footer gameMode={gameMode} restartGame={handleRestart} winner={winner} skills={skills} players={players} scores={scores} />
     </div>
   );
 };
