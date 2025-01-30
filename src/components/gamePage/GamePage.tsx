@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { processMove, isGameModeType } from './utils';
-import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState, RoleProps, WinnerType, Skills } from '../../types';
+import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState, RoleProps, WinnerType, Skills, SkillType } from '../../types';
 import socket from '../../socket/socket';
 import Desk from '../desk/Desk';
 import Header from '../header/Header';
@@ -20,7 +20,11 @@ const GamePage: React.FC = () => {
   const [role, setRole] = useState<'X' | 'O' | ''>(''); // Роль игрока ("X" или "O")
   const [currentPlayer, setCurrentPlayer] = useState<string>('X'); // Игрок, который сейчас ходит
   const [scores, setScores] = useState<{ name: string; score: number }[]>([]);
-  const [skills, setSkills] = useState<Skills>({});
+  const [skills, setSkills] = useState<Skills>({ borrow: 0, lock: 0, unlock: 0 });
+  const [lockCounters, setLockCounters] = useState<Record<number, number>>({});
+  const [activeSkill, setActiveSkill] = useState<'borrow'| 'lock' | 'unlock' | null>(null);
+  const [steps, setSteps] = useState(0)
+
   
 
   const [searchParams] = useSearchParams();
@@ -28,7 +32,7 @@ const GamePage: React.FC = () => {
   const room = searchParams.get('room');
   const rawGameMode = searchParams.get('gameMode');
   const gameMode: GameModeType = isGameModeType(rawGameMode) ? rawGameMode : 'Standard';
-  console.log(skills)
+
   useEffect(() => {
     if (!name || !room || !gameMode) {
       socket.disconnect();
@@ -41,9 +45,11 @@ const GamePage: React.FC = () => {
   useEffect(() => {
     const handlePlayerRole = ({ role, skills }: RoleProps ) => {
       setRole(role);
-
-      setSkills({...skills});
-      console.log(`Ваша роль: ${role}`);
+      if (skills !== undefined) {
+        setSkills({...skills});
+      }
+      
+      console.log(`Ваша роль: ${role} скиллы: ${JSON.stringify(skills)}`);
     }
 
     const handleUpdatePlayers = (updatedPlayers: PleyerType[]) => {
@@ -52,23 +58,26 @@ const GamePage: React.FC = () => {
       setIsGameStarted(updatedPlayers.length === 2);
     }
 
-    const handleStateUpdated = ({ players, currentPlayer, squares, winCombination, winner }: ReternedServerState) => {
+    const handleStateUpdated = ({ players, currentPlayer, squares, updeteSkills, winCombination, winner }: ReternedServerState) => {
       setCurrentPlayer(currentPlayer);
       setSquares(squares);
       setWinCombination(winCombination);
       setWinner(winner);
       if (gameMode === 'Half') {
+        if (updeteSkills) {
+          setLockCounters({});
+          setSkills(players.find((p) => p.name === name)?.skills as Skills || { borrow: 0, lock: 0, unlock: 0 });
+        }
+    
         setScores(players.map((p) => ({ name: p.name, score: p.score })));
+        setSteps(0);
         if (winCombination && winner === name) {
-          
           // Добавляем бонусный скилл borrow для победившего игрока
-
             setSkills(prev => ({...prev, borrow: prev.borrow + 1}));
-
         }
 
         if ( winner === 'Ничья') {
-          socket.emit('restartGame', { room, saveScores: true });
+          socket.emit('restartGame', { room, saveScores: true, updateSkills: true });
         }
       }
 
@@ -84,38 +93,115 @@ const GamePage: React.FC = () => {
         }
     }
 
+    const handleLocksUpdated = (lockedSquares: Record<number, number>) => {
+      setLockCounters(lockedSquares);
+    }
+
+    
     socket.off('playerRole').on('playerRole', handlePlayerRole);
     socket.off('updatePlayers').on('updatePlayers', handleUpdatePlayers);
     socket.off('stateUpdated').on('stateUpdated', handleStateUpdated);
+    socket.off('locksUpdated').on('locksUpdated', handleLocksUpdated);
     socket.off('gameRestarted').on('gameRestarted', handleGameRestarted);
 
     return () => {
         socket.off('playerRole', handlePlayerRole);
         socket.off('updatePlayers', handleUpdatePlayers);
         socket.off('stateUpdated', handleStateUpdated);
+        socket.off('locksUpdated', handleLocksUpdated);
         socket.off('gameRestarted', handleGameRestarted);
     };
   }, []); // Squares is delited from dependencies
 
-  const handleSquareClick = useCallback((index: number) => {
-    if (role !== currentPlayer || winner) return;
+  const handleSquareClick = useCallback(
+    (index: number) => {
+      if (winner) return;
+      if (role !== currentPlayer) {
+        setActiveSkill(null);
+        alert('Сейчас не ваш ход!');
+        return;
+      }
 
-    const { marker, isValid } = processMove({
+      if (activeSkill === 'unlock' && skills.unlock > 0 && lockCounters[index] > 0) {
+        
+        socket.emit('lock', {
+          room,
+          index,
+          player: role,
+          lockAction: 'unlock',
+        })
+        setSkills((prev) => ({ ...prev, unlock: prev.unlock - 1 }));
+        setActiveSkill(null);
+        setSteps(prev => prev + 1);
+        return;
+      } else if (activeSkill === 'unlock' && skills.unlock > 0 && !lockCounters[index]) {
+        setActiveSkill(null);
+        alert('Разблокировать можно только заблокированную клетку.');
+        return;
+      }
+      
+      if (lockCounters[index] > 0) {
+        alert('Эта клетка заблокирована!');
+        return;
+      }
+  
+      if (activeSkill === 'lock') {
+        if (skills.lock > 0 && squares[index] === null) {
+          socket.emit('lock', {
+            room,
+            index,
+            player: role,
+            lockAction: 'lock',
+          });
+          setSkills((prev) => ({ ...prev, lock: prev.lock - 1 }));
+          setActiveSkill(null);
+          setSteps(prev => prev + 1);
+          return;
+        } else {
+          setActiveSkill(null);
+          alert('Нельзя заблокировать эту клетку!');
+          return;
+        }
+      }
+      
+      // Логика обычного хода
+      const { marker, isValid } = processMove({
         index,
         squares,
         role,
         gameMode,
         skills,
+        activeSkill,
         updateSkills: (newSkills) => setSkills(newSkills),
-    });
+      });
+      if (activeSkill) {
+        setActiveSkill(null);
+      }
+      if (!isValid) return;
+  
+      socket.emit('move', { room, index, marker, player: role });
+    },
+    [role, currentPlayer, winner, squares, gameMode, activeSkill, skills, room, lockCounters]
+  );
 
-    if (!isValid) return;
+  const handleActivateSkill = (skill: SkillType | null) => {
+    if (steps === 1) {
+      alert('You can use only one skill per move');
+      return;
+    }
 
-    socket.emit('move', { room, index, marker, player: role });
-  }, [role, currentPlayer, winner, squares, gameMode, room]);
+    if (skill === null) {
+      setActiveSkill(null);
+      return;
+    }
+    if (skills[skill] > 0) {
+      setActiveSkill(skill);
+    }
+  };
 
   const handleRestart = useCallback(() => {
-    socket.emit('restartGame', { room });
+    const shouldUpdateSkills = gameMode === 'Half' ? true : false;
+    socket.emit('restartGame', { room, saveScores: false, updateSkills: shouldUpdateSkills });
   },[room]);
 
   const handleLeaveRoom = useCallback(() => {
@@ -140,8 +226,9 @@ const GamePage: React.FC = () => {
         onSquareClick={handleSquareClick}
         isGameStarted={isGameStarted}
         isCurrentPlayer={role === currentPlayer}
+        lockCounters={lockCounters} // Передаём состояние блокировок
       />
-      <Footer gameMode={gameMode} restartGame={handleRestart} winner={winner} skills={skills} players={players} scores={scores} />
+      <Footer gameMode={gameMode} activeSkill={activeSkill} activateSkill={handleActivateSkill} restartGame={handleRestart} winner={winner} skills={skills} players={players} scores={scores} />
     </div>
   );
 };

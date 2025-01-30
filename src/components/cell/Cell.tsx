@@ -1,6 +1,7 @@
 import React, { useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CellContent from './CellContent';
+import styles from './cellSvg.module.css';
 
 interface CellProps {
   value: 'X' | 'O' | 'X_HALF' | 'O_HALF' | '' | null;
@@ -8,10 +9,11 @@ interface CellProps {
   isDisabled: boolean;
   isCurrentPlayer: boolean;
   id: number;
+  lockCounter: number;
   onClick: () => void;
 }
 
-const Cell: React.FC<CellProps> = ({ value, id, isWinCell, isDisabled, isCurrentPlayer, onClick }) => {
+const Cell: React.FC<CellProps> = ({ value, id, isWinCell, isDisabled, isCurrentPlayer, lockCounter, onClick }) => {
   const [isHoverable, setIsHoverable] = React.useState(false);
   const [isTouchPad, setIsTouchPad] = React.useState(false);
 
@@ -22,7 +24,7 @@ const Cell: React.FC<CellProps> = ({ value, id, isWinCell, isDisabled, isCurrent
     if (mediaQuery.matches) {
       setIsTouchPad(true)
     }
-    
+
     if (!isWinCell && isHoverableValue && isCurrentPlayer) {
       setIsHoverable(true);
     } else {
@@ -49,8 +51,22 @@ const Cell: React.FC<CellProps> = ({ value, id, isWinCell, isDisabled, isCurrent
       onClick={onClick}
       disabled={!isDisabled}
     >
-      <AnimatePresence>
-        <CellContent value={value} index={id}/>
+      <AnimatePresence mode="wait">
+        {lockCounter > 0 ? (
+          <motion.div
+            key={id}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            transition={{ duration: 0.3 }}
+            className={styles.lockIndicator}
+          >
+            <div className={styles.lockIcon} >🔒</div>
+            <span className={styles.lockCounter}>{lockCounter}</span>
+          </motion.div>
+        ) : (
+          <CellContent value={value} index={id} />
+        )}
       </AnimatePresence>
     </motion.button>
   );

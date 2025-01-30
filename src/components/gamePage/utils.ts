@@ -37,35 +37,50 @@ export const isGameModeType = (value: string | null): value is GameModeType => {
     role,
     gameMode,
     skills,
+    activeSkill,
     updateSkills
   }: ProcessMoveParams): { marker: SquareValue; isValid: boolean } => {
     const copySquares = [...squares];
     const currentValue = copySquares[index];
     let marker: SquareValue = null;
     let isValid = true;
-  
+    // if (activeSkill !== null && activeSkill !== 'borrow') {
+    //   alert('Ра');
+    //   return { marker: null, isValid: false };
+    // }
     if (currentValue === 'X' || currentValue === 'O') {
+      if (activeSkill === 'borrow' && skills.borrow > 0) {
+        alert('Нельзя стереть завершенную клетку');
+      }
       isValid = false; // Клетка уже занята
     } else if (gameMode === 'Half') {
       if (currentValue === null) {
+        if ( activeSkill === 'borrow') {
+          alert('Нельзя стереть пустую клетку');
+          return { marker: null, isValid: false };
+        }
         marker = role === 'X' ? 'X_HALF' : 'O_HALF'; // Половинный ход
-      } else if (currentValue === 'X_HALF' && role === 'X') {
+      } else if (currentValue === 'X_HALF' && role === 'X' && !activeSkill) {
         marker = 'X'; // Завершение крестика
-      } else if (currentValue === 'O_HALF' && role === 'O') {
+      } else if (currentValue === 'O_HALF' && role === 'O' && !activeSkill) {
         marker = 'O'; // Завершение нолика
     } else if (
       (currentValue === 'X_HALF' && role === 'O') ||
       (currentValue === 'O_HALF' && role === 'X')
     ) {
-      // Проверяем лимит стираний
-    
-      if (skills.borrow > 0) {
+      // Проверяем лимит стираний и является ли скил активированным
+      if (skills.borrow > 0 && activeSkill !== 'borrow') {
+        alert('Для стирания половинчатых клеток активируйте скил "borrow"');
+        return { marker: null, isValid: false };
+      }
+      if (skills.borrow > 0 && activeSkill === 'borrow') {
         marker = null; // Стираем половинчатую клетку
         updateSkills({
           ...skills,
           borrow: skills.borrow - 1
         });
       } else {
+        alert('Лимит стираний исчерпан');
         isValid = false; // Нельзя стирать, лимит исчерпан
       }
     } else {

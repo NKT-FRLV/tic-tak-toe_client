@@ -13,6 +13,48 @@
     stroke: #0D63F8;
 }
 
+/* Контейнер под иконку замка */
+.lockIndicator {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    /* Можно добавить какое-то фоновое оформление, если хотите */
+  }
+  
+  /* Сама иконка замка */
+  .lockIcon {
+
+    font-size: 3rem;
+    color: red; /* Или другой цвет под стиль */
+  }
+  
+  /* Маленький кружок со счётчиком в правом верхнем углу */
+  .lockCounter {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+  
+    width: 1.5rem;
+    height: 1.5rem;
+  
+    border-radius: 50%;
+    background-color: #d1fae5; /* пастельно-зелёный */
+    border: 1px solid #10b981; /* чуть более тёмный зелёный */
+    color: #065f46; /* тёмно-зелёный */
+    font-size: 1rem;
+    font-weight: bold;
+
+  /* Тени внутри и снаружи */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5), /* внутренняя тень */
+              0 0 5px rgba(0, 0, 0, 0.5);  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
 @media (hover: none) and (pointer: coarse) and (min-width: 900px) {
     /* Для устройств с тачпадами */
     .svg {
