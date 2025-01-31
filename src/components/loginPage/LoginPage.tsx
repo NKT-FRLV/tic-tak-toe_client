@@ -12,6 +12,7 @@ import styles from './loginPage.module.css'
 import { GameModeType } from '../../types';
 import Loader from '../../utilComponents/Loader'
 import { connectServer } from '../../socket/socket';
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface FormValues {
     name: string;
@@ -78,60 +79,69 @@ const LoginPage = () => {
       };
 
   return (
-    <div className={styles.wrapper}>
-        <div className={styles.container}>
-            <h2 className={styles.title}>Join Game</h2>
-            <ThemeProvider theme={customTheme}>
-            <form className={styles.form} onSubmit={handleFormSubmit}>
-                <TextField
-                    label="Name"
-                    variant="standard"
-                    name="name"
-                    value={values.name}
-                    onChange={handleChange}
-                    fullWidth
-                    autoComplete="no" 
-                />
-                <TextField
-                    label="Room"
-                    variant="standard"
-                    name="room"
-                    value={values.room}
-                    onChange={handleChange}
-                    fullWidth
-                    sx={{ marginTop: '16px' }} // Отступ между инпутами
-                />
-                <FormControl variant="standard" fullWidth sx={{  minWidth: 120, marginTop: '10px' }}>
-                    <InputLabel id="game-mode-label">Game Mode</InputLabel>
-                    <Select
-                        labelId="game-mode-label"
-                        id="demo-simple-select-standard"
-                        value={values.gameMode}
-                        onChange={handleChange}
-                        label="gameMode"
-                        name='gameMode'
-                    >
-                    <MenuItem value={'Standard'}>Standart</MenuItem>
-                    <MenuItem value={'Half'}>Half Mode</MenuItem>
-                    </Select>
-                </FormControl>
-                <button className={styles.button} disabled={isLoading} onClick={hendleSubmit} type='submit' >
-                {isLoading ? (
-                    <Loader
-                        visible={true}
-                        height="1rem"
-                        width="3.5rem"
-                        color="#646cffaa"
-                        ariaLabel="three-dots-loading"
-                    />)
-                    : "Войти в игру"}
-                </button>
-                
-            </form>
-            </ThemeProvider>
-            {error ? <p className={styles.error}>{error}</p> : <div className={styles.errorPlaceHolder}></div>}
-        </div>
-    </div>
+    <AnimatePresence>
+      <motion.div
+      className={styles.wrapper}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1 }}
+    >
+          <div className={styles.container}>
+              <h2 className={styles.title}>Join Game</h2>
+              <ThemeProvider theme={customTheme}>
+              <form className={styles.form} onSubmit={handleFormSubmit}>
+                  <TextField
+                      label="Name"
+                      variant="standard"
+                      name="name"
+                      value={values.name}
+                      onChange={handleChange}
+                      fullWidth
+                      autoComplete="no" 
+                  />
+                  <TextField
+                      label="Room"
+                      variant="standard"
+                      name="room"
+                      value={values.room}
+                      onChange={handleChange}
+                      fullWidth
+                      sx={{ marginTop: '16px' }} // Отступ между инпутами
+                  />
+                  <FormControl variant="standard" fullWidth sx={{  minWidth: 120, marginTop: '10px' }}>
+                      <InputLabel id="game-mode-label">Game Mode</InputLabel>
+                      <Select
+                          labelId="game-mode-label"
+                          id="demo-simple-select-standard"
+                          value={values.gameMode}
+                          onChange={handleChange}
+                          label="gameMode"
+                          name='gameMode'
+                      >
+                      <MenuItem value={'Standard'}>Standart</MenuItem>
+                      <MenuItem value={'Half'}>Half-Mode</MenuItem>
+                      <MenuItem value={'AI_Standard'}>AI</MenuItem>
+                      </Select>
+                  </FormControl>
+                  <button className={styles.button} disabled={isLoading} onClick={hendleSubmit} type='submit' >
+                  {isLoading ? (
+                      <Loader
+                          visible={true}
+                          height="1rem"
+                          width="3.5rem"
+                          color="#646cffaa"
+                          ariaLabel="three-dots-loading"
+                      />)
+                      : "Войти в игру"}
+                  </button>
+                  
+              </form>
+              </ThemeProvider>
+              {error ? <p className={styles.error}>{error}</p> : <div className={styles.errorPlaceHolder}></div>}
+          </div>
+      </motion.div>
+    </AnimatePresence>
   )
 }
 

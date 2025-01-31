@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { processMove, isGameModeType } from './utils';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { GameModeType, ReternedServerState, PleyerType, SquareValue, ServerRestartState, RoleProps, WinnerType, Skills, SkillType } from '../../types';
 import socket from '../../socket/socket';
 import Desk from '../desk/Desk';
@@ -210,26 +211,34 @@ const GamePage: React.FC = () => {
   }, [room, navigate]);
 
   return (
-    <div className="game-page">
-      <Header
-        gameStatus={winner ? `Победитель: ${winner}` : `${currentPlayer}`}
-        isGameStarted={isGameStarted}
-        playerRole={role}
-        playerName={name || 'unknown'}
-        thisRoom={room || 'unknown'}
-        mode={gameMode}
-        exitRoom={handleLeaveRoom}
-      />
-      <Desk
-        squares={squares}
-        winCombination={winCombination}
-        onSquareClick={handleSquareClick}
-        isGameStarted={isGameStarted}
-        isCurrentPlayer={role === currentPlayer}
-        lockCounters={lockCounters} // Передаём состояние блокировок
-      />
-      <Footer gameMode={gameMode} activeSkill={activeSkill} activateSkill={handleActivateSkill} restartGame={handleRestart} winner={winner} skills={skills} players={players} scores={scores} />
-    </div>
+    <AnimatePresence>
+      <motion.div
+        className="game-page"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 1 }}
+      >
+        <Header
+          gameStatus={winner ? `Победитель: ${winner}` : `${currentPlayer}`}
+          isGameStarted={isGameStarted}
+          playerRole={role}
+          playerName={name || 'unknown'}
+          thisRoom={room || 'unknown'}
+          mode={gameMode}
+          exitRoom={handleLeaveRoom}
+        />
+        <Desk
+          squares={squares}
+          winCombination={winCombination}
+          onSquareClick={handleSquareClick}
+          isGameStarted={isGameStarted}
+          isCurrentPlayer={role === currentPlayer}
+          lockCounters={lockCounters} // Передаём состояние блокировок
+        />
+        <Footer gameMode={gameMode} activeSkill={activeSkill} activateSkill={handleActivateSkill} restartGame={handleRestart} winner={winner} skills={skills} players={players} scores={scores} />
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

@@ -1,4 +1,4 @@
-export type GameModeType = 'Standard' | 'Half';
+export type GameModeType = 'Standard' | 'Half' | 'AI';
 export type RoleType = 'X' | 'O' | ''; 
 export type RoleProps = { role: Exclude<RoleType, ''>, skills: Skills };
 export type WinnerType = 'X' | 'O' | 'Ничья';
