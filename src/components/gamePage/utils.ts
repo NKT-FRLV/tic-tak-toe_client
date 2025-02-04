@@ -3,6 +3,8 @@ interface WinnerAndCombination {
     winner: string | null;
     combination: number[] | null;
   }
+
+const gameModes: string[] = ['Standard', 'Half', "AI"];
   
 export const calculateWinner = (squares: (string | null)[]): WinnerAndCombination | null => {
     const lines = [
@@ -29,7 +31,7 @@ export const calculateWinner = (squares: (string | null)[]): WinnerAndCombinatio
 
 export const isGameModeType = (value: string | null): value is GameModeType => {
     if (value === null) return false;
-    return ['Standard', 'Half'].includes(value);
+    return gameModes.includes(value);
 };
   export const processMove = ({
     index,
