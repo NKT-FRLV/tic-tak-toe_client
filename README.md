@@ -1,50 +1,72 @@
-# React + TypeScript + Vite
+# 🎮 Tic-Tac-Toe Online – The Ultimate Game Experience 🤖✨  
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🔗 **Play now:** [tic-tak-toe-client.vercel.app](https://tic-tak-toe-client.vercel.app/)  
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## **About the Project**  
+This is not just another Tic-Tac-Toe game. It’s a **fully interactive**, **AI-powered**, and **WebSocket-enabled** multiplayer experience. Built with **React, Vite, and TypeScript**, featuring **Framer Motion animations** and an **AI opponent that processes real-time prompts using OpenAI's API**.  
 
-## Expanding the ESLint configuration
+🚀 **Game Modes:**  
+1️⃣ **Classic Mode** – Traditional Tic-Tac-Toe gameplay 2 clients  🏆  
+2️⃣ **Custom Mode** – My own **unique rules** where players can **erase opponent's moves** 🔥  
+3️⃣ **AI Mode** – Play against an **intelligent AI opponent**, which receives structured prompts to make **optimized decisions** 🤖  
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
 
-- Configure the top-level `parserOptions` property like this:
+## **Key Features**  
+✅ **Smooth and fluid animations** powered by **Framer Motion** 🎨  
+✅ **Multiplayer with WebSockets** for real-time gameplay 🔗  
+✅ **AI-powered opponent** using **OpenAI API** – dynamically processes prompts to make **strategic moves** 🧠  
+✅ **Optimized token consumption** when interacting with OpenAI to minimize costs 💰  
+✅ **Interactive and immersive UI**, making the gameplay engaging and visually appealing 🎭  
+✅ **Server-side logic is hosted separately** for security and scalability 🌍  
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+---
+
+## **Tech Stack & Libraries**  
+- **Frontend:** React, Vite, TypeScript  
+- **Animations:** Framer Motion  
+- **State Management:** React Context  
+- **Networking:** WebSockets for real-time multiplayer  
+- **AI Integration:** OpenAI API for smart decision-making  
+- **Server:** Hosted on a separate deployment  
+
+---
+
+## **Installation & Setup**  
+
+### **1️⃣ Clone the Repository**  
+```bash
+git clone https://github.com/yourusername/tic-tak-toe-client.git
+cd tic-tak-toe-client
+npm install
+npm run dev
 ```
+The game will be available at http://localhost:5173/
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## **Try the Full Experience!** 🌟  
+🚀 You can:  
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+- **Play classic Tic-Tac-Toe** 🏆  
+- **Erase opponent’s moves in custom mode** ⚡  
+- **Challenge an AI opponent** that thinks strategically based on structured prompts 🤖  
+- **Play real-time multiplayer via WebSockets** 🔗  
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+---
+
+## **Author**  
+👨‍💻 **Developed by [Nikita Frolov](https://github.com/mi-viejo-amigo)**  
+
+📩 **Contact me:**  
+- **GitHub:** [mi-viejo-amigo](https://github.com/mi-viejo-amigo)  
+- **LinkedIn:** [LinkedIn Profile](https://www.linkedin.com/in/nktfrlv)  
+- **Email:** [Letter me](mailto:nkt.frlv7@yandex.ru)  
+
+---
+
+**This project redefines how Tic-Tac-Toe should be played!** 🚀🔥  
+
+#react #vite #typescript #framerMotion #openai #websockets #gamedev #machinelearning #ai #multiplayer #webdevelopment
+
+
