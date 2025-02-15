@@ -56,10 +56,10 @@ The game will be available at http://localhost:5173/
 ---
 
 ## **Author**  
-👨‍💻 **Developed by [Nikita Frolov](https://github.com/mi-viejo-amigo)**  
+👨‍💻 **Developed by [Nikita Frolov](https://github.com/NKT-FRLV)**  
 
 📩 **Contact me:**  
-- **GitHub:** [mi-viejo-amigo](https://github.com/mi-viejo-amigo)  
+- **GitHub:** [mi-viejo-amigo](https://github.com/NKT-FRLV)  
 - **LinkedIn:** [LinkedIn Profile](https://www.linkedin.com/in/nktfrlv)  
 - **Email:** [Letter me](mailto:nkt.frlv7@yandex.ru)  
 
