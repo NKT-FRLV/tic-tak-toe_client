@@ -2,6 +2,13 @@
 
 🔗 **Play now:** [tic-tak-toe-client.vercel.app](https://tic-tak-toe-client.vercel.app/)  
 
+## ⚠️ Important notice
+
+**🌐 I use free hosting for the game server.**  
+Because of this, the initial connection may take **up to ~30 seconds** – due to the server's "cold start" after idle time.  
+
+Thank you for your patience and understanding! 🎮
+
 ---
 
 ## **About the Project**  
