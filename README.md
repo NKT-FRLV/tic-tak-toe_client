@@ -1,6 +1,6 @@
 # 🎮 Tic-Tac-Toe Online – The Ultimate Game Experience 🤖✨  
 
-🔗 **Play now:** [tic-tak-toe-client.vercel.app](https://tic-tak-toe-client.vercel.app/)  
+## 🔗 Play now: [tic-tak-toe](https://tic-tak-toe-client.vercel.app/)  
 
 ## ⚠️ Important notice
 
